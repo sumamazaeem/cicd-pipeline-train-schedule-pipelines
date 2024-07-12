@@ -1,12 +1,11 @@
 plugins {
-    // Include the new NodeJS plugin to execute NodeJS and npm tasks
     id 'com.github.node-gradle.node' version '3.0.1'
 }
 
 node {
     download = true
-    version = '14.17.0'      // Update to a more recent version of Node.js
-    npmVersion = '6.14.13'   // Update NPM to a corresponding recent version
+    version = '12.22.1'      // Switch to LTS version compatible with npm
+    npmVersion = '6.14.13'
 }
 
 repositories.whenObjectAdded { repository ->
@@ -17,10 +16,8 @@ repositories.whenObjectAdded { repository ->
     }
 }
 
-// Declare a build task
 task build
 
-// Declare a task to create a zip of the app
 task zip(type: Zip) {
     from('.') {
         include "*"
@@ -56,7 +53,7 @@ if (!project.tasks.findByName('npmBuild')) {
     }
 }
 
-// Declare task dependencies
+// Declare tasks dependencies
 build.dependsOn zip
 zip.dependsOn npmBuild
 npmBuild.dependsOn npmTest
