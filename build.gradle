@@ -35,19 +35,25 @@ task zip(type: Zip) {
     baseName = "trainSchedule"
 }
 
-// Declare npm tasks
-task npmInstall(type: NpmTask) {
-    args = ['install']
+// Conditionally define npm tasks
+if (!project.tasks.findByName('npmInstall')) {
+    task npmInstall(type: NpmTask) {
+        args = ['install']
+    }
 }
 
-task npmTest(type: NpmTask) {
-    dependsOn npmInstall
-    args = ['test']
+if (!project.tasks.findByName('npmTest')) {
+    task npmTest(type: NpmTask) {
+        dependsOn npmInstall
+        args = ['test']
+    }
 }
 
-task npmBuild(type: NpmTask) {
-    dependsOn npmInstall
-    args = ['run', 'build']
+if (!project.tasks.findByName('npmBuild')) {
+    task npmBuild(type: NpmTask) {
+        dependsOn npmInstall
+        args = ['run', 'build']
+    }
 }
 
 // Declare task dependencies
