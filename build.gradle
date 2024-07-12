@@ -1,43 +1,57 @@
 plugins {
-  //inlude the nodeJS plugin to execute nodejs and npm tasks
-  id "com.moowork.node" version "1.2.0"
+    // Include the new NodeJS plugin to execute NodeJS and npm tasks
+    id 'com.github.node-gradle.node' version '3.0.1'
 }
 
 node {
-	download = true
-	version = "9.11.1"
-	npmVersion = "5.6.0"
+    download = true
+    version = '14.17.0'      // Update to a more recent version of Node.js
+    npmVersion = '6.14.13'   // Update NPM to a corresponding recent version
 }
 
-repositories.whenObjectAdded {
-    if (it instanceof IvyArtifactRepository) {
-        metadataSources {
+repositories.whenObjectAdded { repository ->
+    if (repository instanceof IvyArtifactRepository) {
+        repository.metadataSources {
             artifact()
         }
     }
 }
 
-//declare a build task
+// Declare a build task
 task build
 
-//declare a task to create a zip of the app
+// Declare a task to create a zip of the app
 task zip(type: Zip) {
-	from ('.') {
-		include "*"
-		include "bin/**"
-		include "data/**"
-		include "node_modules/**"
-		include "public/**"
-		include "routes/**"
-		include "views/**"
-	}
-	destinationDir(file("dist"))
-	baseName "trainSchedule"
+    from('.') {
+        include "*"
+        include "bin/**"
+        include "data/**"
+        include "node_modules/**"
+        include "public/**"
+        include "routes/**"
+        include "views/**"
+    }
+    destinationDir(file("dist"))
+    baseName = "trainSchedule"
 }
 
-//declare task dependencies
+// Declare npm tasks
+task npmInstall(type: NpmTask) {
+    args = ['install']
+}
+
+task npmTest(type: NpmTask) {
+    dependsOn npmInstall
+    args = ['test']
+}
+
+task npmBuild(type: NpmTask) {
+    dependsOn npmInstall
+    args = ['run', 'build']
+}
+
+// Declare task dependencies
 build.dependsOn zip
-zip.dependsOn npm_build
-npm_build.dependsOn npm_test
-npm_test.dependsOn npmInstall
-npm_build.dependsOn npmInstall
+zip.dependsOn npmBuild
+npmBuild.dependsOn npmTest
+npmTest.dependsOn npmInstall
